@@ -53,7 +53,7 @@
     </fx:Script>
 
     <mx:Declarations>
-        <s:WebService id="MyWebService" wsdl="http://localhost:4228/Service1.asmx?wsdl" useProxy="false"
+        <s:WebService id="MyWebService" wsdl="http://192.168.180.81:8099/Service1.asmx?wsdl" useProxy="false"
                       result="onResult(event)" fault="onFault(event)">
             <s:operation name="ToDoList"/>
             <s:operation name="updatetodolist"/>
