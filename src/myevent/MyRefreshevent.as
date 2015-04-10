@@ -1,6 +1,8 @@
 /**
  * Created by wxlhy on 2015-04-04.
  */
+
+//自定义事件：用于页面刷新与跨页面传值
 package myevent {
 
 import flash.events.Event;
