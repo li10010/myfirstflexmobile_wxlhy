@@ -2,6 +2,7 @@
 <!--
   Created by wxlhy on 2015-03-31.
 -->
+<!--编辑事项显示页，目前只能修改条目内容-->
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
         xmlns:mx="http://ns.adobe.com/mxml/2009" xmlns:local="*"
         >
