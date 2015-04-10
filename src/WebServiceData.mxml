@@ -1,0 +1,64 @@
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="http://ns.adobe.com/mxml/2009"
+        >
+    <fx:Script>
+        <![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.events.ResultEvent;
+        import mx.utils.UIDUtil;
+
+        import spark.components.Alert;
+
+        public var mylist:ArrayCollection;
+
+        public function onResult(event:ResultEvent):void {
+            var todolist:ArrayCollection = this.MyWebService.ToDoList.lastResult as ArrayCollection;
+            mylist = todolist;
+        }
+
+        private function onFault(event:FaultEvent):void {
+            Alert.show(event.fault.faultDetail.toString());
+        }
+
+        public function GetToDoList(ls:String):void {
+
+            this.MyWebService.addEventListener(ResultEvent.RESULT, onResult);
+            this.MyWebService.addEventListener(FaultEvent.FAULT, onFault);
+            this.MyWebService.ToDoList.send(ls);
+        }
+
+        <!--修改-->
+        public function UpdateToDoList(_id:String,_label,_iscom:String):int {
+           var flag:int= this.MyWebService.updatetodolist(_id,_label,_iscom);
+            return flag;
+        }
+
+
+        <!--删除-->
+
+        public function DeleteToDo(_id:String):void {
+
+                this.MyWebService.deletetodo(_id);
+        }
+
+        <!--添加-->
+
+        public function AddTodo(_label:String,_date:Date):void {
+            this.MyWebService.addtodo(UIDUtil.createUID(), _label, 'false');
+        }
+        ]]>
+        <!--<s:Button name="HW" label="Get HelloWorld" click="GetToDoList()"/>-->
+    </fx:Script>
+
+    <mx:Declarations>
+        <s:WebService id="MyWebService" wsdl="http://localhost:4228/Service1.asmx?wsdl" useProxy="false"
+                      result="onResult(event)" fault="onFault(event)">
+            <s:operation name="ToDoList"/>
+            <s:operation name="updatetodolist"/>
+            <!--<s:operation name="addtodo"/>-->
+            <!--<s:operation name="deletetodo"/>-->
+        </s:WebService>
+    </mx:Declarations>
+</s:Application>
+

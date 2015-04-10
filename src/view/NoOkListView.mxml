@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:mx="http://ns.adobe.com/mxml/2009" xmlns:local="*" xmlns:renderer="renderer.*"
+        xmlns:mycomponent="mycomponent.*"
+        creationComplete="creationCompleteHandler(event)"
+        >
+
+    <s:titleLayout>
+        <s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"/>
+    </s:titleLayout>
+    <s:titleContent>
+        <s:Label text="未办事项" fontStyle="normal" fontWeight="bold" fontSize="30" color="0x87ceeb"/>
+    </s:titleContent>
+    <s:navigationContent>
+        <s:Button label="返回" click="navigator.popToFirstView()"/>
+    </s:navigationContent>
+    <s:actionContent>
+        <s:Button label="添加" click="navigator.pushView(view.AddView)"/>
+    </s:actionContent>
+    <!--<renderer:CheckListItemRenderer refreshview="changeview()"/>-->
+
+    <!-- 通过指定itemRenderer 的方式更改list的构建元素-->
+    <fx:Script>
+        <![CDATA[
+        import mx.events.FlexEvent;
+
+        import myevent.MyRefreshevent;
+
+        private function creationCompleteHandler(event:FlexEvent):void {
+            remoteData.GetToDoList('false');
+            notodoList.addEventListener(MyRefreshevent.REFRESHVIEW, changeview);
+            notodoList.addEventListener(MyRefreshevent.PUSHVIEW, changeview);
+        }
+
+        private function listgetdata():void {
+            notodoList.dataProvider = remoteData.mylist;
+        }
+
+        public function changeview(event:MyRefreshevent):void {
+
+            var pushArray:Array = new Array();
+            pushArray.push(event.dataItem[0].id,event.dataItem[0].label);
+            var mydata:Object = new Object();
+            mydata.arr = pushArray;
+            if (event.type == MyRefreshevent.REFRESHVIEW)
+                navigator.pushView(view.NoOkListView);
+            else
+                navigator.pushView(view.EditView, mydata);
+        }
+        ]]>
+
+    </fx:Script>
+    <local:WebServiceData id="remoteData"/>
+    <mycomponent:MyList id="notodoList" updateComplete="listgetdata()" width="100%" height="100%"
+                        itemRenderer="renderer.CheckListItemRenderer"/>
+</s:View>

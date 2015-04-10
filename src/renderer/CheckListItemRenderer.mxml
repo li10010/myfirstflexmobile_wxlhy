@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+
+<s:DataRenderer  xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:local="*"
+                currentState="inst"
+        >
+    <s:states>
+        <s:State name="inst"/>
+        <s:State name="edit"/>
+    </s:states>
+    <fx:Metadata>
+        [Event(name='refreshview', type='myevent.MyRefreshevent')]
+    </fx:Metadata>
+
+    <!-- data字段，是由系统自动构建的，在渲染器里可以随意访问data中的属性  click="cb.selected = !cb.selected"-->
+    <s:HGroup id ="dataGroup" verticalAlign="middle" width.edit="80%" width.inst="100%" click.inst="Updatestata(event)"
+              color="{cb.selected?0x006600:0xFF0000}" mouseDown="onMouseDown(event)" mouseUp="onMouseUp(event)">
+        <s:Label id="cbLabel" text="{data.Label}" paddingLeft="10" fontStyle="italic"/>
+        <s:Spacer width="90%"/>
+        <s:CheckBox id="cb" selected="{data.IsComplete}" label="{cb.selected?'已办':'待办'}"
+                    skinClass="myskin.NewCheckBoxSkin01"/>
+    </s:HGroup>
+    <s:HGroup verticalAlign="middle" width="10%" right="0">
+        <s:Image source="@Embed('/css/删除.png')" smooth="true" width="0" height="0" width.edit="40" height.edit="30"
+                 enabled.inst="false" click="btn_delete()"/>
+        <s:Image source="@Embed('/css/编辑.jpg')" smooth="true" width="0" height="0" width.edit="40" height.edit="30"
+                 enabled.inst="false" click="btn_update(event)"/>
+    </s:HGroup>
+    <local:WebServiceData id="remoteData"/>
+    <fx:Script><![CDATA[
+        import mx.events.CloseEvent;
+
+        import myevent.MyRefreshevent;
+
+        import spark.components.Alert;
+
+        public var currentdata:Array;
+
+        public function getdatalabel():String {
+            return data.Label;
+        }
+
+        var currentdatalabel:String;
+
+        public function Updatestata(event:MouseEvent):void {
+            cb.selected = !cb.selected;
+            var iscom:String = data.IsComplete ? 'false' : 'true';
+            var ok:int = remoteData.UpdateToDoList(String(data.ID), "", iscom);
+            currentdata = new Array(
+                    {id: String(data.ID), label: data.Label});
+            owner.dispatchEvent(new MyRefreshevent(MyRefreshevent.REFRESHVIEW, currentdata));
+        }
+
+        public function btn_delete():void {
+            timer1.stop();
+            Alert.show("确认删除吗？", "提示！", Alert.YES | Alert.NO, null, OkDelete);
+        }
+
+        public function OkDelete(event:CloseEvent):void {
+
+            if (event.detail == Alert.YES) {
+                remoteData.DeleteToDo(String(data.ID));
+                Alert.show("已删除", "提示");
+
+                currentdata = new Array(
+                        {id: String(data.ID), label: data.Label});
+                owner.dispatchEvent(new MyRefreshevent(MyRefreshevent.REFRESHVIEW, currentdata));
+            }
+            else
+                timer1.start();
+        }
+
+        public function btn_update(event:MouseEvent):void {
+            timer1.stop();
+            currentdata = new Array(
+                    {id: String(data.ID), label: data.Label});
+            owner.dispatchEvent(new MyRefreshevent(MyRefreshevent.PUSHVIEW, currentdata));
+        }
+
+        public function changstat():void {
+            currentState = "edit";
+        }
+
+
+        private var isPressed:Boolean = false;
+        private var timer:Timer = new Timer(1000, 1);  //长按条目变为编辑状态
+        private var timer1:Timer = new Timer(2000, 1);  //状态为edit时计时自动回归初始状态
+
+        protected function onMouseDown(event:MouseEvent):void {
+
+            isPressed = true;
+            timer.addEventListener(TimerEvent.TIMER, onTimerHandler);
+            timer.start();
+        }
+
+        function onTimerHandler(event:TimerEvent):void {
+            if (isPressed) {
+                currentState = (currentState == "inst" ? "edit" : "inst");
+            }
+        }
+
+        protected function onMouseUp(event:MouseEvent):void {
+
+            timer.stop();
+            if (currentState == "edit") {
+                timer1.addEventListener(TimerEvent.TIMER, onTimerHandler);
+                timer1.start();
+            }
+            else timer1.stop();
+
+        }
+        ]]></fx:Script>
+
+</s:DataRenderer>
