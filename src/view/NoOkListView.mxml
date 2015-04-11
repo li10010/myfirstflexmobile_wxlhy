@@ -40,14 +40,16 @@
 
         public function changeview(event:MyRefreshevent):void {
 
-            var pushArray:Array = new Array();
-            pushArray.push(event.dataItem[0].id,event.dataItem[0].label);
-            var mydata:Object = new Object();
-            mydata.arr = pushArray;
+
             if (event.type == MyRefreshevent.REFRESHVIEW)
                 navigator.pushView(view.NoOkListView);
-            else
+            else {
+                var pushArray:Array = new Array();
+                pushArray.push(event.dataItem[0].id, event.dataItem[0].label);
+                var mydata:Object = new Object();
+                mydata.arr = pushArray;
                 navigator.pushView(view.EditView, mydata);
+            }
         }
         ]]>
 

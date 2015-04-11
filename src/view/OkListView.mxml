@@ -51,7 +51,6 @@
                 navigator.pushView(view.NoOkListView);
             else
                 navigator.pushView(view.EditView, mydata);
-
         }
         ]]>
 

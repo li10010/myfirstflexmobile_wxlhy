@@ -39,7 +39,6 @@
         <!--删除-->
 
         public function DeleteToDo(_id:String):void {
-
                 this.MyWebService.deletetodo(_id);
         }
 
